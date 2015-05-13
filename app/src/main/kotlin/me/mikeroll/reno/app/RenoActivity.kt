@@ -7,17 +7,29 @@ import android.util.Log
 import me.mikeroll.reno.client.reno
 import rx.schedulers.Schedulers
 import rx.android.schedulers.AndroidSchedulers
+import org.jetbrains.anko.*
 
 public class RenoActivity : Activity() {
 
+    var listFragment: EventListFragment? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.reno_activity)
-        var events = reno.findEvents("Minsk")
-        events.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ j ->
-                    Log.d("EVENT", j[0].venue.country)
-                })
+        frameLayout { id = R.id.container }
+        loadListFragment(restore = savedInstanceState == null)
+    }
+
+    private fun loadListFragment(restore: Boolean) {
+        val fm = getFragmentManager()
+        val tag = "eventlist"
+
+        if (restore) {
+            listFragment = listFragment ?: EventListFragment.newInstance()
+            fm.beginTransaction()
+              .replace(R.id.container, listFragment!!, tag)
+              .commit()
+        } else {
+            listFragment = fm.findFragmentByTag(tag) as EventListFragment
+        }
     }
 }
