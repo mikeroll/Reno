@@ -11,6 +11,7 @@ public class RenoActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        getActionBar().setTitle("Events near you")
         frameLayout { id = R.id.container }
         loadListFragment(restore = savedInstanceState == null)
     }

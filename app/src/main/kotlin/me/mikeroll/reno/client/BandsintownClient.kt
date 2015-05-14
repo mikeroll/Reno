@@ -12,7 +12,7 @@ public trait BandsintownService {
     [GET("/events/search")]
     fun findEvents(
             [Query("location")] location: String,
-            [Query("per_page")] perPage: Int = 20
+            [Query("per_page")] perPage: Int = 100
     ) : Observable<Array<Event>>
 }
 
