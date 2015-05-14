@@ -1,6 +1,7 @@
 package me.mikeroll.reno.app
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import com.google.gson.Gson
 import me.mikeroll.reno.client.Event
@@ -22,7 +23,18 @@ public class EventDetailsActivity : Activity() {
         super.onCreate(savedInstanceState)
         if (event != null) {
             linearLayout {
-                button(event!!.artists[0].name)
+                button(event!!.artists[0].name) {
+                    onClick {
+                        val intent = Intent(Intent.ACTION_INSERT)
+                        with(intent) {
+                            setType("vnd.android.cursor.item/event")
+                            putExtra("beginTime", event!!.datetime.getTime())
+                            putExtra("allDay", true)
+                            putExtra("title", event!!.artists[0].name)
+                        }
+                        startActivity(intent)
+                    }
+                }
             }
         } else {
             longToast("Failed loading event :(")
