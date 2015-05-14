@@ -1,18 +1,20 @@
 package me.mikeroll.reno.app
 
 import android.app.Fragment
+import android.location.Location
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import me.mikeroll.reno.client.Event
 import me.mikeroll.reno.client.reno
-import org.jetbrains.anko.*
+import org.jetbrains.anko.ctx
+import org.jetbrains.anko.id
+import org.jetbrains.anko.scrollBarStyle
+import pl.charmas.android.reactivelocation.ReactiveLocationProvider
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
-import java.util.ArrayList
 import kotlin.properties.Delegates
 
 public class EventListFragment : Fragment() {
@@ -21,7 +23,10 @@ public class EventListFragment : Fragment() {
         fun newInstance() = EventListFragment()
     }
 
-    val adapter: EventsAdapter by Delegates.lazy { EventsAdapter(this) }
+    val adapter: EventsAdapter
+            by Delegates.lazy { EventsAdapter(this) }
+    val locationProvider: ReactiveLocationProvider
+            by Delegates.lazy { ReactiveLocationProvider(ctx) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,11 +52,25 @@ public class EventListFragment : Fragment() {
         }
     }
 
-    private fun loadEvents(location: String = "Minsk") {
-        val o = reno.findEvents(location)
-        o.subscribeOn(Schedulers.newThread())
-         .observeOn(AndroidSchedulers.mainThread())
-         .subscribe { events -> updateList(events) }
+    private fun loadEvents(location: String = "") {
+        val fetchEvents = { loc: String ->
+            reno.findEvents(loc)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { events -> updateList(events) }
+        }
+        if (location != "") {
+            fetchEvents(location)
+        } else {
+            locationProvider.getLastKnownLocation()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { l ->
+                    val loc = Location.convert(l.getLatitude(), Location.FORMAT_DEGREES) + "," +
+                            Location.convert(l.getLongitude(), Location.FORMAT_DEGREES)
+                    fetchEvents(loc)
+                }
+        }
     }
 
     private fun updateList(result: Array<Event>) {

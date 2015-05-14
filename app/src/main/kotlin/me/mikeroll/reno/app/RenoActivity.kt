@@ -2,12 +2,8 @@ package me.mikeroll.reno.app
 
 import android.app.Activity
 import android.os.Bundle
-import android.util.Log
-
-import me.mikeroll.reno.client.reno
-import rx.schedulers.Schedulers
-import rx.android.schedulers.AndroidSchedulers
-import org.jetbrains.anko.*
+import org.jetbrains.anko.frameLayout
+import org.jetbrains.anko.id
 
 public class RenoActivity : Activity() {
 

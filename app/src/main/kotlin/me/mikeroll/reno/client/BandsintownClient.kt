@@ -1,7 +1,6 @@
 package me.mikeroll.reno.client
 
 import com.google.gson.GsonBuilder
-import me.mikeroll.reno.app.BuildConfig
 import retrofit.RequestInterceptor
 import retrofit.RestAdapter
 import retrofit.converter.GsonConverter
