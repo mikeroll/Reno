@@ -3,6 +3,7 @@ package me.mikeroll.reno.app
 import android.app.Fragment
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +21,12 @@ public class EventListFragment : Fragment() {
         fun newInstance() = EventListFragment()
     }
 
-    val adapter: EventsAdapter by Delegates.lazy { EventsAdapter() }
+    val adapter: EventsAdapter by Delegates.lazy { EventsAdapter(this) }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setRetainInstance(true)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return with(ctx) {
@@ -36,7 +42,9 @@ public class EventListFragment : Fragment() {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadEvents()
+        if (savedInstanceState == null) {
+            loadEvents()
+        }
     }
 
     private fun loadEvents(location: String = "Minsk") {
